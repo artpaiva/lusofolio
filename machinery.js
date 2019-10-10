@@ -1,4 +1,4 @@
-﻿
+
 var analysis = document.getElementById('analysis-field');
 var writing = document.getElementById('write');
 var typeTimer;
