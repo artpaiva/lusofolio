@@ -6,7 +6,7 @@ var typeTimer;
 writing.addEventListener('keyup', () => {
     clearTimeout(typeTimer);
     if (writing.value) {
-        typeTimer = setTimeout(runAnalysis, 200);
+        typeTimer = setTimeout(runAnalysis, 400);
     }
 });
 
@@ -99,6 +99,7 @@ function isWord (text) {
         case '—':
         case '.':
         case '...':
+        case ';':
         case '!':
         case '?':
         case '-':
@@ -306,9 +307,6 @@ function isVerb (text) {
 			for(var item in allverbs[verb][conjugate]){
 				var classing = `Verbo '${allverbs[verb][allverbs[verb].length-1][0]}' no ${verbTypes[conjugate]}`;
 				var current = allverbs[verb][conjugate][item];
-				if(conjugate == (allverbs[verb].length - 2) && getCleanFormsHard(current, tex) ){
-					console.log('AAAAAAAAAAAAAAAAAAAAAAAAa');
-				}
 				if (current == tex
 					||(conjugate == (allverbs[verb].length - 2) && getCleanFormsHard(current, tex) )){
 					var person = (item % 3)+1;
@@ -561,6 +559,7 @@ var nouns = {
 	etiqueta: {name: 'etiqueta',masc: false,hasp: true,},
 	terra: {name: 'terra',masc: false,hasp: true,},
 	forma: {name: 'forma',masc: false,hasp: true,},
+	dia: {name: 'dia',masc: true,hasp: true,},
 	pe: {name: 'pé',masc: true,hasp: true,},
 	mao: {name: 'mão',masc: false,hasp: true,},
 	mae: {name: 'mãe',masc: false,hasp: true,},
@@ -814,6 +813,7 @@ var adjectives = {
 	ciano: {name: 'ciano'},
 	internacional: {name: 'internacional',hasp: true,},
 	nacional: {name: 'nacional',hasp: true,},
+	preferencial: {name: 'preferencial',hasp: true,},
 	certo: {name: 'certo',masc: true,biform: true,hasp: true,},
 	correto: {name: 'correto',masc: true,biform: true,hasp: true,},
 	verdadeiro: {name: 'verdadeiro',masc: true,biform: true,hasp: true,},
@@ -894,9 +894,13 @@ var verbs = {
 	haver: {name: 'haver'},
 	estar: {name: 'estar'},
 	dar: {name: 'dar'},
+	poder: {name: 'poder', regular: true, light: true},
+	seguir: {name: 'seguir', regular: true, light: true},
+	preferir: {name: 'preferir', regular: true, light: true},
 	caber: {name: 'caber', regular: true},
 	saber: {name: 'saber', regular: true},
 	agir: {name: 'agir', regular: true, light: true},
+	reagir: {name: 'reagir', regular: true, light: true},
 	surgir: {name: 'surgir', regular: true, light: true},
 	participar: {name: 'participar', regular: true},
 	falar: {name: 'falar', regular: true},
@@ -905,8 +909,10 @@ var verbs = {
 	trair: {name: 'trair', regular: true},
 	lavar: {name: 'lavar', regular: true},
 	calar: {name: 'calar', regular: true},
+	tentar: {name: 'tentar', regular: true},
 	criar: {name: 'criar', regular: true},
 	verificar: {name: 'verificar', regular: true},
+	procurar: {name: 'procurar', regular: true},
 	confessar: {name: 'confessar', regular: true},
 	agachar: {name: 'agachar', regular: true},
 	pagar: {name: 'pagar', regular: true},
@@ -917,9 +923,14 @@ var verbs = {
 	titubear: {name: 'titubear', regular: true},
 	aquecer: {name: 'aquecer', regular: true, light: true},
 	acontecer: {name: 'acontecer', regular: true, light: true},
+	nascer: {name: 'nascer', regular: true, light: true},
+	descer: {name: 'descer', regular: true, light: true},
 	agradecer: {name: 'agradecer', regular: true, light: true},
 	poer: {name: 'poer', regular: true},
 	voar: {name: 'voar', regular: true},
+	doar: {name: 'doar', regular: true},
+	jogar: {name: 'jogar', regular: true, light: true},
+	equivaler: {name: 'equivaler', regular: true, light: true},
 	enrolar: {name: 'enrolar', regular: true},
 	comprar: {name: 'comprar', regular: true},
 	chamar: {name: 'chamar', regular: true},
@@ -958,7 +969,7 @@ var verbs = {
 	reconhecer: {name: 'reconhecer', regular: true, light: true},
 	conhecer: {name: 'conhecer', regular: true, light: true},
 	concluir: {name: 'concluir', regular: true,},
-	garoar: {name: 'garoar', natural: true,},
+	garoar: {name: 'garoar', natural: true, regular: true,},
 	erguer: {name: 'erguer', regular: true, light: true},
 	por: {name: 'pôr', regular: true},
 	supor: {name: 'supor', regular: true},
@@ -1006,6 +1017,8 @@ function conjugate (verb) {
 						altRadical = radical.slice(0, -1)+'ç';
 					else
 						altRadical = radical.slice(0, -1)+'c';
+					if('pod' === radical)
+						altRadical = radical.slice(0, -1)+'ss';
 					firstAlt = altRadical;
 					break;
 				case 'l':
@@ -1020,6 +1033,10 @@ function conjugate (verb) {
 					altRadical = radical;
 					firstAlt = altRadical;
 					break;
+			}
+			switch(radical){
+				case 'seg': case 'prefer':
+					altRadical = altRadical.replaceAt(altRadical.lastIndexOf('e'), 'i');
 			}
 		} else {
 			altRadical = radical;
@@ -1047,6 +1064,9 @@ function conjugate (verb) {
 			break;
 	}
 	return conjugates;
+}
+String.prototype.replaceAt=function(index, replacement) {
+    return this.substr(0, index) + replacement+ this.substr(index + replacement.length);
 }
 
 function verbRegular (vowel, radical, altRadical, firstAlt, name) {
@@ -1544,6 +1564,12 @@ function irregularSubPresent(vowel, radical, altRadical, imperative){
 			break;
 	}
 	return tense;
+}
+function diphtongTenses(vowel, radical, altRadical) {
+	// Verbo cair, sair
+}
+function xerTenses(vowel, radical, altRadical) {
+	// Verbo ler, crer, descrer
 }
 
 function isVowel (letter) {
