@@ -16,7 +16,8 @@ function runAnalysis () {
 	var text_write = writing.value;
 	// var word_now = text_write.split(/(\n)| /g);
 	// var analysis_now = text_write.split(/(?=[.\s]|\b)/);
-	var phrases = text_write.split(/(?=[.\!-?\n/\(\)"')])/g);
+	// var phrases = text_write.split(/(?=[.\!-?\n/])/g);
+	var phrases = text_write.split(/(?<=[\.!?\n])/);
 	for(var item in phrases){
     var phrase = document.createElement('text');
 		phrase.classList.add('phrase');
@@ -29,7 +30,7 @@ function runAnalysis () {
 }
 
 function phraseMorphology (text) {
-	var analysis_now = text.split(/([, .?!-/\(\)"')])/g);
+	var analysis_now = text.split(/([, .?!\n/\(\)")])/g);
 	var ran = '';
 	var element = [];
 	var count = 0;
@@ -42,7 +43,7 @@ function phraseMorphology (text) {
 			var prepositioning = isPreposition(temp_word);
 			var adverbing = isAdverb(temp_word);
 			var pronouning = isPronoun(temp_word);
-			var nouning = isNoun(temp_word);
+			var nouning = isNoun(temp_word, count);
 			var adjectiving = isAdjective(temp_word);
 			var verbing = isVerb(temp_word);
 			var numbering = isNumber(temp_word);
@@ -68,10 +69,10 @@ function phraseMorphology (text) {
 			} else {
 				element[element.length] = createMeta(temp_word, 'wrong', '???');
 			}
+			count += 1;
 		} else {
 			if(temp_word === '\n'){
 				// ran += '<br>';
-				console.log('Espaço');
 				var linebreak = document.createElement("br");
 				element[element.length] = linebreak;
 			} else{
@@ -239,7 +240,7 @@ function isPreposition (text) {
 	return false;
 }
 
-function isNoun (text) {
+function isNoun (text, number) {
 	for(var item in nouns){
 		var allform = getAllforms(nouns, item, text);
 		if (allform){
@@ -249,21 +250,31 @@ function isNoun (text) {
 			return classing;
 		}
 	}
-	if (/^[A-Z]/.test(text)){
+	if (/^[A-Z]/.test(text) && number > 1){
 		return 'substantivo próprio';
 	}
 	return false;
 }
 function isAdjective (text) {
+	var tex = text.toLowerCase();
 	for(var item in adjectives){
-		var allform = getAllforms(adjectives, item, text);
-		if (allform){
+		var allform = getAllforms(adjectives, item, tex);
+		if (allform || tex == `${getAdjectiveForm(adjectives[item].name)}mente`){
 			var classing = 'Adjetivo';
 			classing = `${classing} ${allform}`;
 			return classing;
 		}
+
 	}
 	return false;
+}
+function getAdjectiveForm (text) {
+	var final = text.slice(-1);
+	switch(final){
+		case 'o':
+			return text.slice(0, -1)+'a';
+	}
+	return text;
 }
 
 function isVerb (text) {
@@ -452,6 +463,10 @@ var nouns = {
 	beleza: {name: 'beleza',masc: false,hasp: true,},
 	forma: {name: 'forma',masc: false,hasp: true,},
 	mao: {name: 'mão',masc: false,hasp: true,},
+	mae: {name: 'mãe',masc: false,hasp: true,},
+	mamae: {name: 'mamãe',masc: false,hasp: true,},
+	pai: {name: 'pai',masc: true,hasp: true,},
+	papai: {name: 'papai',masc: true,hasp: true,},
 	mulher: {
 		name: 'mulher',
 		masc: false,
@@ -598,6 +613,8 @@ var adverbs = {
 	depois: { name: 'depois',},
 	apos: { name: 'após',},
 	logo: { name: 'logo',},
+	cedo: { name: 'cedo',},
+	tarde: { name: 'tarde',},
 	adiante: { name: 'adiante',},
 	muito: { name: 'muito',},
 	pouco: { name: 'pouco',},
@@ -612,14 +629,26 @@ var adverbs = {
 	alem: { name: 'além',},
 	alias: { name: 'aliás',},
 	enfim: { name: 'enfim',},
+	nao: { name: 'não',},
+	sim: { name: 'sim',},
+	mesmo: { name: 'mesmo',},
+	sempre: { name: 'sempre',},
+	ne: { name: 'né',},
 	finalmente: { name: 'finalmente',},
 }
 
 var adjectives = {
 	reto: {name: 'reto',masc: true,biform: true,hasp: true,},
 	curvo: {name: 'curvo',masc: true,biform: true,hasp: true,},
+	novo: {name: 'novo',masc: true,biform: true,hasp: true,},
+	velho: {name: 'velho',masc: true,biform: true,hasp: true,},
+	cheio: {name: 'cheio',masc: true,biform: true,hasp: true,},
+	vazio: {name: 'vazio',masc: true,biform: true,hasp: true,},
+	ultimo: {name: 'último',masc: true,biform: true,hasp: true,},
+	proximo: {name: 'próximo',masc: true,biform: true,hasp: true,},
 	pequeno: {name: 'pequeno',masc: true,biform: true,hasp: true,},
 	grande: {name: 'grande',masc: true,biform: true,hasp: true,},
+	otimo: {name: 'ótimo',masc: true,biform: true,hasp: true,},
 	menor: {name: 'menor',hasp: true,},
 	maior: {name: 'maior',hasp: true,},
 	alto: {name: 'alto',masc: true,biform: true,hasp: true,},
@@ -627,7 +656,74 @@ var adjectives = {
 	bonito: {name: 'bonito',masc: true,biform: true,hasp: true,},
 	lindo: {name: 'lindo',masc: true,biform: true,hasp: true,},
 	parecido: {name: 'parecido',masc: true,biform: true,hasp: true,},
+	mau: {name: 'mau',masc: true,hasp: true,},
+	bom: {name: 'bom',masc: true,hasp: true,},
+	ma: {name: 'má',hasp: true,},
+	boa: {name: 'boa',hasp: true,},
 	igual: {name: 'igual',hasp: true,},
+	capaz: {name: 'capaz',hasp: true,},
+	quente: {name: 'quente',hasp: true,},
+	frio: {name: 'frio',masc: true,biform: true,hasp: true,},
+	morno: {name: 'morno',masc: true,biform: true,hasp: true,},
+	mourno: {name: 'mourno',masc: true,biform: true,hasp: true,},
+	humano: {name: 'humano',masc: true,biform: true,hasp: true,},
+	facil: {name: 'fácil',hasp: true,},
+	dificil: {name: 'difícil',hasp: true,},
+	claro: {name: 'claro',masc: true,biform: true,hasp: true,},
+	escuro: {name: 'escuro',masc: true,biform: true,hasp: true,},
+	branco: {name: 'branco',masc: true,biform: true,hasp: true,},
+	preto: {name: 'preto',masc: true,biform: true,hasp: true,},
+	vermelho: {name: 'vermelho',masc: true,biform: true,hasp: true,},
+	amarelo: {name: 'amarelo',masc: true,biform: true,hasp: true,},
+	roxo: {name: 'roxo',masc: true,biform: true,hasp: true,},
+	laranja: {name: 'laranja',hasp: true,},
+	verde: {name: 'verde',hasp: true,},
+	rosa: {name: 'rosa',hasp: true,},
+	anil: {name: 'anil',hasp: true,},
+	azul: {name: 'azul',hasp: true,},
+	ciano: {name: 'ciano'},
+	internacional: {name: 'internacional',hasp: true,},
+	nacional: {name: 'nacional',hasp: true,},
+	certo: {name: 'certo',masc: true,biform: true,hasp: true,},
+	correto: {name: 'correto',masc: true,biform: true,hasp: true,},
+	verdadeiro: {name: 'verdadeiro',masc: true,biform: true,hasp: true,},
+	falso: {name: 'falso',masc: true,biform: true,hasp: true,},
+	errado: {name: 'errado',masc: true,biform: true,hasp: true,},
+	incorreto: {name: 'incorreto',masc: true,biform: true,hasp: true,},
+	esperto: {name: 'esperto',masc: true,biform: true,hasp: true,},
+	burro: {name: 'burro',masc: true,biform: true,hasp: true,},
+	inteligente: {name: 'inteligente',hasp: true,},
+	so: {name: 'só',hasp: true,},
+	sozinho: {name: 'sozinho',masc: true,biform: true,hasp: true,},
+	longo: {name: 'longo',masc: true,biform: true,hasp: true,},
+	curto: {name: 'curto',masc: true,biform: true,hasp: true,},
+	amplo: {name: 'amplo',masc: true,biform: true,hasp: true,},
+	publico: {name: 'público',masc: true,biform: true,hasp: true,},
+	privado: {name: 'privado',masc: true,biform: true,hasp: true,},
+	atrasado: {name: 'atrasado',masc: true,biform: true,hasp: true,},
+	adiantado: {name: 'adiantado',masc: true,biform: true,hasp: true,},
+	absoluto: {name: 'absoluto',masc: true,biform: true,hasp: true,},
+	principal: {name: 'principal',hasp: true,},
+	possivel: {name: 'possível',hasp: true,},
+	impossivel: {name: 'impossível',hasp: true,},
+	especial: {name: 'especial',hasp: true,},
+	recente: {name: 'recente',hasp: true,},
+	jovem: {name: 'jovem',hasp: true,},
+	real: {name: 'real',hasp: true,},
+	diferente: {name: 'diferente',hasp: true,},
+	importante: {name: 'importante',hasp: true,},
+	portugues: {name: 'português',masc: true,biform: true,hasp: true,},
+	brasileiro: {name: 'brasileiro',masc: true,biform: true,hasp: true,},
+	italiano: {name: 'italiano',masc: true,biform: true,hasp: true,},
+	ingles: {name: 'inglês',masc: true,biform: true,hasp: true,},
+	espanhol: {name: 'espanhol',masc: true,biform: true,hasp: true,},
+	alemao: {name: 'alemão',masc: true,biform: true,hasp: true,},
+	frances: {name: 'francês',masc: true,biform: true,hasp: true,},
+	sueco: {name: 'sueco',masc: true,biform: true,hasp: true,},
+	argentino: {name: 'argentino',masc: true,biform: true,hasp: true,},
+	uruguaio: {name: 'uruguaio',masc: true,biform: true,hasp: true,},
+	paraguaio: {name: 'paraguaio',masc: true,biform: true,hasp: true,},
+	canadense: {name: 'canadense',hasp: true,},
 }
 
 var verbs = {

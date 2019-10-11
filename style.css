@@ -20,31 +20,37 @@
     vertical-align: top;
 }
 .analysis-write{
-    width: 100%;
-    min-height: 10rem;
-    padding: 1rem;
-    background: #00000011;
-    color: #555;
-    font-size: inherit;
+	width: 100%;
+	min-height: 10rem;
+	padding: 1rem;
+	background: #00000011;
+	color: #555;
+	font-size: inherit;
 }
 .analysis-panel{
 	border: 1px solid #00000011;
 }
+.analysis-panel span{
+	transition: 0.3s;
+}
 .analysis-panel span:not(.phrase):before{
-    content: attr(description);
-    pointer-events: none;
-    opacity: 0;
-    position: absolute;
-    margin-top: 2rem;
-    margin-left: -1rem;
-    padding: 1rem;
-    box-shadow: 1px 2px 3px 1px #00000022;
-    background: #fff;
-    color: #777;
-    transition: 0.3s;
+	content: attr(description);
+	pointer-events: none;
+	opacity: 0;
+	position: absolute;
+	margin-top: 2rem;
+	margin-left: -1rem;
+	padding: 1rem;
+	box-shadow: 1px 2px 3px 1px #00000022;
+	background: #fff;
+	color: #777;
+	transition: 0.3s;
+}
+.analysis-panel span:hover{
+	background: #00000011;
 }
 .analysis-panel span:hover:before{
-    opacity: 1;
+	opacity: 1;
 }
 .analysis-panel span.wrong{
 	/*text-decoration: underline wavy #dd2255;*/
@@ -57,18 +63,25 @@
 	background-size: 8px 2px;
 	background-position:0 95%;
 }
+.analysis-panel span.borrow{
+	font-style: italic;
+}
 .analysis-panel span.article{
-    color: purple;
+	color: purple;
 }
 .analysis-panel span.pronoun{
-    color: green;
+	color: green;
 }
 .analysis-panel span.noun{
-    color: blue;
+	color: #333;
 }
 .analysis-panel span.verb{
-    color: orange;
+	color: orange;
 }
 .analysis-panel text.phrase{
-    border: 1px dashed #ccc;
+	border: 1px dashed transparent;
+	transition: 0.2s;
+}
+.analysis-panel text.phrase:hover{
+	border: 1px dashed #ccc;
 }
