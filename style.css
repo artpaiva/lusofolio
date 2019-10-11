@@ -31,7 +31,9 @@
 	border: 1px solid #00000011;
 }
 .analysis-panel span{
+    border: 1px dashed transparent;
 	transition: 0.3s;
+    transition-delay: 0.1s;
 }
 .analysis-panel span:not(.phrase):before{
 	content: attr(description);
@@ -43,13 +45,16 @@
 	box-shadow: 1px 2px 3px 1px #00000022;
 	background: #fff;
 	color: #777;
+    transition-delay: 0.3s;
 	transition: 0.3s;
 }
 .analysis-panel span:hover{
-	background: #00000011;
+    border: 1px dashed #999;
+    transition-delay: 0.2s;
 }
 .analysis-panel span:hover:before{
 	opacity: 1;
+    transition-delay: 0.3s;
 }
 .analysis-panel span.wrong{
 	/*text-decoration: underline wavy #dd2255;*/
@@ -78,9 +83,9 @@
     color: #999;
 }
 .analysis-panel text.phrase{
-	border: 1px dashed transparent;
+    background: #00000000;
 	transition: 0.2s;
 }
 .analysis-panel text.phrase:hover{
-	border: 1px dashed #ccc;
+    background: #00000011;
 }
