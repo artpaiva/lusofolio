@@ -667,6 +667,7 @@ var adjectives = {
 	morno: {name: 'morno',masc: true,biform: true,hasp: true,},
 	mourno: {name: 'mourno',masc: true,biform: true,hasp: true,},
 	humano: {name: 'humano',masc: true,biform: true,hasp: true,},
+	proposital: {name: 'proposital',hasp: true,},
 	facil: {name: 'fácil',hasp: true,},
 	dificil: {name: 'difícil',hasp: true,},
 	claro: {name: 'claro',masc: true,biform: true,hasp: true,},
@@ -728,7 +729,9 @@ var adjectives = {
 
 var verbs = {
 	ser: {name: 'ser'},
+	ter: {name: 'ter'},
 	ir: {name: 'ir'},
+	caber: {name: 'caber', regular: true},
 	agir: {name: 'agir', regular: true, light: true},
 	surgir: {name: 'surgir', regular: true, light: true},
 	participar: {name: 'participar', regular: true},
@@ -774,11 +777,29 @@ var verbs = {
 	concluir: {name: 'concluir', regular: true,},
 	garoar: {name: 'garoar', natural: true,},
 	erguer: {name: 'erguer', regular: true, light: true},
+	por: {name: 'pôr', regular: true},
+	supor: {name: 'supor', regular: true},
+	repor: {name: 'repor', regular: true},
+	dispor: {name: 'dispor', regular: true},
+	pospor: {name: 'pospor', regular: true},
+	prepor: {name: 'prepor', regular: true},
+	propor: {name: 'propor', regular: true},
+	sobpor: {name: 'sobpor', regular: true},
+	sotopor: {name: 'sotopor', regular: true},
+	antepor: {name: 'antepor', regular: true},
+	sobrepor: {name: 'sobrepor', regular: true},
+	superpor: {name: 'superpor', regular: true},
+	entrepor: {name: 'entrepor', regular: true},
+	interpor: {name: 'interpor', regular: true},
+	justapor: {name: 'justapor', regular: true},
 }
 var verbTypes = [ 'Presente do Indicativo', 'Pretérito Imperfeito do Indicativo', 'Pretérito Perfeito do Indicativo', 'Pretérito Mais-que-Perfeito', 'Futuro do Presente', 'Futuro do Pretérito', 'Presente do Subjuntivo', 'Pretérito Imperfeito do Subjuntivo', 'Futuro do Subjuntivo', 'Imperativo Afirmativo', 'Imperativo Negativo', 'Infinitivo Pessoal', 'Gerùndio', 'Particípio Passado', 'Infinitivo' ];
 function conjugate (verb) {
 	var radical = verb.name.slice(0, -2);
 	var vowel = verb.name.slice(-2).slice(0,1);
+	if(vowel === 'ô'){
+		vowel = 'o';
+	}
 	var desinence = vowel.slice(0, 1);
 	var altRadical = radical.slice(-1);
 	var firstAlt = altRadical;
@@ -818,7 +839,7 @@ function conjugate (verb) {
 			firstAlt = altRadical;
 		}
 
-		var conjugates = verbRegular(vowel, radical, altRadical, firstAlt);
+		var conjugates = verbRegular(vowel, radical, altRadical, firstAlt, verb.name);
 	} else {
 		var conjugates = verbIrregular(verb, vowel, radical, altRadical, firstAlt);
 	}
@@ -830,11 +851,14 @@ function conjugate (verb) {
 		case 'e':
 			verb.participle = radical+'ido';
 			break;
+		case 'o':
+			verb.participle = radical+'osto';
+			break;
 	}
 	return conjugates;
 }
 
-function verbRegular (vowel, radical, altRadical, firstAlt) {
+function verbRegular (vowel, radical, altRadical, firstAlt, name) {
 	var conjugates = [];
 	conjugates[0] = getIndPresent (vowel, radical, altRadical, firstAlt);
 	conjugates[1] = getIndPretImperfect (vowel, radical, altRadical);
@@ -847,7 +871,7 @@ function verbRegular (vowel, radical, altRadical, firstAlt) {
 	conjugates[8] = getSubFuture(vowel, radical, altRadical);
 	conjugates[9] = getImpAffirmative(vowel, radical, altRadical);
 	conjugates[10] = getImpNegative(vowel, radical, altRadical);
-	conjugates[11] = getPersonalInfinitive(vowel, radical, altRadical);
+	conjugates[11] = getPersonalInfinitive(vowel, radical, altRadical, name);
 	return conjugates;
 }
 
@@ -859,6 +883,10 @@ function getIndPresent (vowel, radical, altRadical, firstAlt) {
 				tense[0] = `${firstAlt.slice(0, -1)}ôo`;
 			else
 				tense[0] = `${firstAlt}o`;
+			var consonants = isHas(radical);
+			if(consonants){
+				tense[0] = `${consonants[0]}ai${consonants[1]}o`;
+			}
 			tense[1] = `${radical+vowel}s`;
 			tense[2] = `${radical+vowel}`;
 			tense[3] = `${radical+vowel}mos`;
@@ -872,6 +900,14 @@ function getIndPresent (vowel, radical, altRadical, firstAlt) {
 			tense[3] = `${radical+vowel}mos`;
 			tense[4] = `${radical+vowel}s`;
 			tense[5] = `${radical}em`;
+			break;
+		case 'o':
+			tense[0] = `${radical+vowel}nho`;
+			tense[1] = `${radical}ões`;
+			tense[2] = `${radical}õe`;
+			tense[3] = `${radical+vowel}mos`;
+			tense[4] = `${radical+vowel}s`;
+			tense[5] = `${radical}õem`;
 			break;
 	}
 	return tense;
@@ -903,6 +939,14 @@ function getIndPretImperfect (vowel, radical, altRadical) {
 			tense[4] = `${radical}íeis`;
 			tense[5] = `${radical}iam`;
 			break;
+		case 'o':
+			tense[0] = `${radical}unha`;
+			tense[1] = `${radical}unhas`;
+			tense[2] = `${radical}unha`;
+			tense[3] = `${radical}únhamos`;
+			tense[4] = `${radical}únheis`;
+			tense[5] = `${radical}unham`;
+			break;
 	}
 	return tense;
 }
@@ -924,20 +968,63 @@ function getIndPretPerfect (vowel, radical, altRadical) {
 			tense[3] = `${radical+vowel}mos`;
 			tense[4] = `${radical+vowel}stes`;
 			tense[5] = `${radical+vowel}ram`;
+			var consonants = isHas(radical);
+			if(consonants){
+				tense[0] = `${consonants[0]}ou${consonants[1]}e`;
+				tense[1] = `${consonants[0]}ou${consonants[1]}este`;
+				tense[2] = `${consonants[0]}ou${consonants[1]}e`;
+				tense[3] = `${consonants[0]}ou${consonants[1]}emos`;
+				tense[4] = `${consonants[0]}ou${consonants[1]}estes`;
+				tense[5] = `${consonants[0]}ou${consonants[1]}eram`;
+			}
+			break;
+		case 'o':
+			tense[0] = `${radical}us`;
+			tense[1] = `${radical}useste`;
+			tense[2] = `${radical}ôs`;
+			tense[3] = `${radical}usemos`;
+			tense[4] = `${radical}usestes`;
+			tense[5] = `${radical}useram`;
 			break;
 	}
 	return tense;
+}
+function isHas (radical) {
+	var option = ['cab', 'hav'];
+	for(now in option){
+		if(radical === option[now]){
+			return [ option[now].slice(0, 1), option[now].slice(-1)];
+		}
+	}
+	return false;
 }
 function getPlusPerfect (vowel, radical, altRadical) {
 	var tense = [];
 	switch(vowel){
 		case 'a': case 'e': case 'i':
+			var consonants = isHas(radical);
 			tense[0] = `${radical+vowel}ra`;
 			tense[1] = `${radical+vowel}ras`;
 			tense[2] = `${radical+vowel}ra`;
 			tense[3] = `${radical+aCuteAccent(vowel)}ramos`;
 			tense[4] = `${radical+aCuteAccent(vowel)}reis`;
 			tense[5] = `${radical+vowel}ram`;
+			if(consonants){
+				tense[0] = `${consonants[0]}ou${consonants[1]}era`;
+				tense[1] = `${consonants[0]}ou${consonants[1]}eras`;
+				tense[2] = `${consonants[0]}ou${consonants[1]}era`;
+				tense[3] = `${consonants[0]}ou${consonants[1]}éramos`;
+				tense[4] = `${consonants[0]}ou${consonants[1]}éreis`;
+				tense[5] = `${consonants[0]}ou${consonants[1]}eram`;
+			}
+			break;
+		case 'o':
+			tense[0] = `${radical}usera`;
+			tense[1] = `${radical}useras`;
+			tense[2] = `${radical}usera`;
+			tense[3] = `${radical}uséramos`;
+			tense[4] = `${radical}uséreis`;
+			tense[5] = `${radical}useram`;
 			break;
 	}
 	return tense;
@@ -945,7 +1032,7 @@ function getPlusPerfect (vowel, radical, altRadical) {
 function getFuturePresent (vowel, radical, altRadical) {
 	var tense = [];
 	switch(vowel){
-		case 'a': case 'e': case 'i':
+		case 'a': case 'e': case 'i': case 'o':
 			tense[0] = `${radical+vowel}rei`;
 			tense[1] = `${radical+vowel}rás`;
 			tense[2] = `${radical+vowel}rá`;
@@ -959,7 +1046,7 @@ function getFuturePresent (vowel, radical, altRadical) {
 function getFuturePast (vowel, radical, altRadical) {
 	var tense = [];
 	switch(vowel){
-		case 'a': case 'e': case 'i':
+		case 'a': case 'e': case 'i': case 'o':
 			tense[0] = `${radical+vowel}ria`;
 			tense[1] = `${radical+vowel}rias`;
 			tense[2] = `${radical+vowel}ria`;
@@ -989,12 +1076,21 @@ function getSubPresent (vowel, radical, altRadical) {
 			tense[4] = `${altRadical}ais`;
 			tense[5] = `${altRadical}am`;
 			break;
+		case 'o':
+			tense[0] = `${radical+vowel}nha`;
+			tense[1] = `${radical+vowel}nhas`;
+			tense[2] = `${radical+vowel}nha`;
+			tense[3] = `${radical+vowel}nhamos`;
+			tense[4] = `${radical+vowel}nheis`;
+			tense[5] = `${radical+vowel}nham`;
+			break;
 	}
 	return tense;
 }
 function getSubPast (vowel, radical, altRadical) {
 	var tense = [];
 	switch(vowel){
+		case 'o': vowel = 'use';
 		case 'a': case 'e': case 'i':
 			tense[0] = `${radical+vowel}sse`;
 			tense[1] = `${radical+vowel}sses`;
@@ -1009,6 +1105,7 @@ function getSubPast (vowel, radical, altRadical) {
 function getSubFuture (vowel, radical, altRadical) {
 	var tense = [];
 	switch(vowel){
+		case 'o': vowel = 'use';
 		case 'a': case 'e': case 'i':
 			tense[0] = `${radical+vowel}r`;
 			tense[1] = `${radical+vowel}res`;
@@ -1039,6 +1136,14 @@ function getImpAffirmative (vowel, radical, altRadical) {
 			tense[4] = `${radical+vowel+(vowel === 'e' ? 'i' : '')}`;
 			tense[5] = `${altRadical}am`;
 			break;
+		case 'o':
+			tense[0] = '';
+			tense[1] = `${radical}õe`;
+			tense[2] = `${radical+vowel}nha`;
+			tense[3] = `${radical+vowel}nhamos`;
+			tense[4] = `${radical+vowel}nde`;
+			tense[5] = `${radical+vowel}nham`;
+			break;
 	}
 	return tense;
 }
@@ -1053,6 +1158,7 @@ function getImpNegative (vowel, radical, altRadical) {
 			tense[4] = `${altRadical}eis`;
 			tense[5] = `${altRadical}em`;
 			break;
+		case 'o': altRadical = radical+'onh';
 		case 'e': case 'i':
 			tense[0] = '';
 			tense[1] = `${altRadical}as`;
@@ -1064,13 +1170,13 @@ function getImpNegative (vowel, radical, altRadical) {
 	}
 	return tense;
 }
-function getPersonalInfinitive (vowel, radical, altRadical) {
+function getPersonalInfinitive (vowel, radical, altRadical, name) {
 	var tense = [];
 	switch(vowel){
-		case 'a': case 'e': case 'i':
-			tense[0] = `${radical+vowel}r`;
+		case 'a': case 'e': case 'i': case 'o':
+			tense[0] = name;
 			tense[1] = `${radical+vowel}res`;
-			tense[2] = `${radical+vowel}r`;
+			tense[2] = name;
 			tense[3] = `${radical+vowel}rmos`;
 			tense[4] = `${radical+vowel}rdes`;
 			tense[5] = `${radical+vowel}rem`;
@@ -1087,7 +1193,10 @@ function aCuteAccent (letter) {
 			return 'ê';
 		case 'i':
 			return 'í';
+		case 'use':
+			return 'usé';
 	}
+	return letter;
 }
 
 window.onload = function () {
@@ -1125,6 +1234,20 @@ function verbIrregular (verb, vowel, radical, altRadical, firstAlt) {
 			conjugates[10] = ['', 'sejas', 'seja', 'sejamos', 'sejais', 'sejam'];
 			conjugates[11] = getPersonalInfinitive(vowel, radical, altRadical);
 			break;
+		case 'ter':
+			conjugates[0] = ['tenho', 'tens', 'tem', 'temos', 'tendes', 'têm'];
+			conjugates[1] = ['tinha', 'tinhas', 'tinha', 'tínhamos', 'tínheis', 'tinham'];
+			conjugates[2] = ['tive', 'tiveste', 'teve', 'tivemos', 'tivestes', 'tiveram'];
+			conjugates[3] = ['tivera', 'tiveras', 'tivera', 'tivéramos', 'tivéreis', 'tiveram'];
+			conjugates[4] = getFuturePresent(vowel, radical, altRadical);
+			conjugates[5] = getFuturePast(vowel, radical, altRadical);
+			conjugates[6] = ['tenha', 'tenhas', 'tenha', 'tenhamos', 'tenhais', 'tenham'];
+			conjugates[7] = ['tivesse', 'tivesses', 'tivesse', 'tivéssemos', 'tivésseis', 'tivessem'];
+			conjugates[8] = ['tiver', 'tiveres', 'tiver', 'tivermos', 'tiverdes', 'tiverem'];
+			conjugates[9] = ['', 'tem', 'tenha', 'tenhamos', 'tende', 'tenham'];
+			conjugates[10] = ['', 'tenhas', 'tenha', 'tenhamos', 'tendes', 'tenham'];
+			conjugates[11] = getPersonalInfinitive(vowel, radical, altRadical);
+			break;
 		case 'ir':
 			conjugates[0] = ['vou', 'vais', 'vai', 'vamos', 'ides', 'vão'];
 			conjugates[1] = getIndPretImperfect (vowel, radical, altRadical);
@@ -1141,4 +1264,14 @@ function verbIrregular (verb, vowel, radical, altRadical, firstAlt) {
 			break;
 	}
 	return conjugates;
+}
+
+function isVowel (letter) {
+	var vowels = ['a', 'e', 'i', 'o', 'u'];
+	for(now in vowels){
+		if(letter === vowels[now]){
+			return true
+		}
+	}
+	return false;
 }
