@@ -48,27 +48,37 @@ function phraseMorphology (text) {
 			var verbing = isVerb(temp_word);
 			var numbering = isNumber(temp_word);
 
-			if(numbering){
-				element[element.length] = createMeta(temp_word, 'number', numbering);
-			} else if(conjuctioning){
-				element[element.length] = createMeta(temp_word, 'conjunction', conjuctioning);
-			} else if(prepositioning){
-				element[element.length] = createMeta(temp_word, 'preposition', prepositioning);
-			} else if(articling){
-				element[element.length] = createMeta(temp_word, 'article', articling);
-			} else if(adverbing){
-				element[element.length] = createMeta(temp_word, 'adverb', adverbing);
-			} else if(pronouning){
-				element[element.length] = createMeta(temp_word, 'pronoun', pronouning);
-			} else if(verbing){
-				element[element.length] = createMeta(temp_word, 'verb', verbing);
-			} else if(adjectiving){
-				element[element.length] = createMeta(temp_word, 'adjective', adjectiving);
-			} else if(nouning){
-				element[element.length] = createMeta(temp_word, 'noun', nouning);
-			} else {
-				element[element.length] = createMeta(temp_word, 'wrong', '???');
+			// Get any number of morphological matches for a given word
+			var atual = document.createElement("span");
+			atual.classList = 'wrong';
+			atual.innerHTML = temp_word;
+			var content = [];
+			var segments = ['number', 'conjunction', 'preposition', 'article', 'adverb', 'pronoun', 'adjective', 'noun', 'verb'];
+			var segmenting = [numbering, conjuctioning, prepositioning, articling, adverbing, pronouning, adjectiving, nouning, verbing];
+			// var segments = ['number', 'conjunction'];
+			// var segmenting = [numbering, conjuctioning];
+			for(var y in segmenting){
+				atual.classList = segmenting[y].found ? segments[y] : atual.classList;
+				console.log(segmenting[y].class);
+				for(var z in segmenting[y].class){
+					if( segmenting[y].class[z] != undefined ){
+						if(content.length > 0)
+							content[content.length] = `\n- ${segmenting[y].class[z]}`;
+						else
+							content[content.length] = `- ${segmenting[y].class[z]}`;
+					}
+				}
 			}
+			if(content.length === 0){
+				content[0] = '???';
+			}
+			var describe = '';
+			for(var y in content){
+				describe += content[y];
+			}
+			atual.setAttribute("description", describe);
+			element[element.length] = atual;
+
 			count += 1;
 		} else {
 			if(temp_word === '\n'){
@@ -120,118 +130,151 @@ function isNumber (text) {
 	var patterm = /^\d+º$/;
 	var patterl = /^\d+°$/;
 	if(pattern.test(text) || patterm.test(text) || patterl.test(text) ){
-		return 'Número Ordinal';
+		return{
+			found: true,
+			class: ['Número Ordinal'],
+		}
 	}
-	return false;
+	return {
+		found: false,
+		class: [],
+	};
 }
+
+function suggest (word, tex) {
+	var letters = ['a', 'ã', 'ão', 'á', 'b', 'c', 'ç', 'd', 'e', 'é', 'f', 'g', 'h', 'i', 'í', 'j', 'k', 'l', 'lh', 'm', 'n', 'nh', 'o', 'ó', 'õ', 'p', 'q', 'qu', 'r', 'rr', 's', 'ss', 't', 'u', 'ú', 'ü', 'v', 'w', 'x', 'y', 'z'];
+	// console.log(`Trying suggestion ${tex} to ${word}.`);
+	for(var x = 0; x < tex.length; x++){
+		for(var y in letters){
+			if(tex.close(x, 1, letters[y]) === word){
+				console.log(`Suggestion: change ${tex} to ${word}.`);
+				return {
+					found: true,
+					word: word,
+				};
+			}
+		}
+	}
+	return {
+		found: false,
+		word: word,
+	};
+}
+String.prototype.close = function(idx, rem, str) {
+    return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
+};
 
 function isConjunction (text) {
 	var tex = text.toLowerCase();
+	var classing = [];
 	for(var item in conjuctions){
 		if (conjuctions[item].name == tex){
-			var classing = 'conjunção';
-			return classing;
+			classing[classing.length] = 'Conjunção';
+			// return classing;
+			return {
+				found: true,
+				class: classing,
+			}
+		} else {
+			var suggestion = suggest(conjuctions[item].name, tex);
+			if(suggestion.found){
+				classing[classing.length] = `Suggestion: ${suggestion.word}`;
+			}
 		}
 	}
-	return false;
+	return {
+		found: false,
+		class: classing,
+	};
 }
 function isAdverb (text) {
 	var tex = text.toLowerCase();
+	var classing = [];
 	for(var item in adverbs){
 		if (adverbs[item].name == tex){
-			var classing = 'advérbio';
-			return classing;
+			classing[classing.length] = 'Advérbio';
+			return {
+				found: true,
+				class: classing,
+			}
+		} else {
+			var suggestion = suggest(adverbs[item].name, tex);
+			if(suggestion.found){
+				classing[classing.length] = `Suggestion: ${suggestion.word}`;
+			}
 		}
 	}
-	return false;
+	return {
+		found: false,
+		class: classing,
+	};
 }
 function isArticle (text) {
 	var tex = text.toLowerCase();
+	var classing = [];
 	for(var item in articles){
 		if (articles[item].name == tex){
-			var classing = 'artigo';
-			classing += articles[item].masc ? ' masculino' : ' feminino';
-			classing += articles[item].singular ? ' singular' : ' plural';
-			classing += articles[item].definite ? ' definido' : ' indefinido';
-			return classing;
+			var when = classing.length;
+			classing[when] = 'Artigo';
+			classing[when] += articles[item].masc ? ' masculino' : ' feminino';
+			classing[when] += articles[item].singular ? ' singular' : ' plural';
+			classing[when] += articles[item].definite ? ' definido' : ' indefinido';
+			return {
+				found: true,
+				class: classing,
+			}
+		} else {
+			var suggestion = suggest(articles[item].name, tex);
+			if(suggestion.found){
+				classing[classing.length] = `Suggestion: ${suggestion.word}`;
+			}
 		}
 	}
-	return false;
+	return {
+		found: false,
+		class: classing,
+	};
 }
 
-var subPronouns = {
-	eu: { name: 'eu', singular: true, person: 1},
-	tu: { name: 'tu', singular: true, person: 2},
-	ele: { name: 'ele', biform: true, masc: true, singular: true, person: 3},
-	ela: { name: 'ela', biform: true, masc: false, singular: true, person: 3},
-	voce: { name: 'você', singular: true, person: 3},
-	nos: { name: 'nós', person: 1},
-	vos: { name: 'vós', person: 2},
-	eles: { name: 'eles', biform: true, masc: true, person: 3},
-	elas: { name: 'elas', biform: true, masc: false, person: 3},
-	voces: { name: 'vocês', person: 3},
-};
-var verbPronouns = {
-	me: { name: 'me', singular: true, person: 1},
-	te: { name: 'te', singular: true, person: 2},
-	o: { name: 'o', biform: true, masc: true, singular: true, person: 3},
-	a: { name: 'a', biform: true, masc: false, singular: true, person: 3},
-	lhe: { name: 'lhe', singular: true, person: 3},
-	se: { name: 'se', singular: true, person: 3},
-	nos: { name: 'nos', person: 1},
-	vos: { name: 'vos', person: 2},
-	os: { name: 'os', biform: true, masc: true, person: 3},
-	as: { name: 'as', biform: true, masc: false, person: 3},
-	lhes: { name: 'lhes', person: 3},
-	se: { name: 'se', person: 3},
-};
-var prepPronouns = {
-	mim: { name: 'mim', singular: true, person: 1},
-	ti: { name: 'ti', singular: true, person: 2},
-	ele: { name: 'ele', biform: true, masc: true, singular: true, person: 3},
-	ela: { name: 'ela', biform: true, masc: false, singular: true, person: 3},
-	si: { name: 'si', singular: true, person: 3},
-	nos: { name: 'nós', person: 1},
-	vos: { name: 'vós', person: 2},
-	eles: { name: 'eles', biform: true, masc: true, person: 3},
-	elas: { name: 'elas', biform: true, masc: false, person: 3},
-	si: { name: 'si', person: 3},
-};
-var possPronouns = {
-	meu: { name: 'meu', singular: true, masc: true, person: 1, hasp: true},
-	minha: { name: 'minha',  singular: true, masc: false, person: 1, hasp: true},
-	teu: { name: 'teu', singular: true, masc: true, person: 2, hasp: true},
-	tua: { name: 'tua',  singular: true, masc: false, person: 2, hasp: true},
-	seu: { name: 'seu', singular: true, masc: true, person: 3, hasp: true},
-	sua: { name: 'sua',  singular: true, masc: false, person: 3, hasp: true},
-	nosso: { name: 'nosso', masc: true, person: 1, hasp: true},
-	nossa: { name: 'nossa', masc: false, person: 1, hasp: true},
-	vosso: { name: 'vosso', masc: true, person: 1, hasp: true},
-	vossa: { name: 'vossa', masc: false, person: 1, hasp: true},
-	seu1: { name: 'seu', masc: true, person: 3, hasp: true},
-	sua2: { name: 'sua', masc: false, person: 3, hasp: true},
-};
 function isPronoun (text) {
 	var tex = text.toLowerCase();
 	var classing = false;
 	classing = forPronouns(subPronouns, tex, 'Pronome de Sujeito');
-	if (classing) return classing;
+	if (classing) return returnExtra(classing);
 	classing = forPronouns(verbPronouns, tex, 'Objeto do Verbo');
-	if (classing) return classing;
+	if (classing) return returnExtra(classing);
 	classing = forPronouns(prepPronouns, tex, 'Objeto da Preposição');
-	if (classing) return classing;
+	if (classing) return returnExtra(classing);
 	classing = forPronouns(possPronouns, tex, 'Objeto Possessivo');
-	if (classing) return classing;
+	if (classing) return returnExtra(classing);
+	classing = [];
 	for(var item in pronouns){
 		if (pronouns[item].name == tex
 		|| (pronouns[item].hasp && tex === getPlural(pronouns[item].name))
 		|| (pronouns[item].biform && tex === getGender(pronouns[item].name))
 		|| (pronouns[item].biform && tex === getPlural(getGender(pronouns[item].name)))){
-			classing = 'Pronome';
-			return classing;
+			classing[classing.length] = 'Pronome';
+			return {
+				found: true,
+				class: classing,
+			}
+		} else {
+			var suggestion = suggest(pronouns[item].name, tex);
+			if(suggestion.found){
+				classing[classing.length] = `Suggestion: ${suggestion.word}`;
+			}
 		}
 	}
-	return false;
+	return {
+		found: false,
+		class: classing,
+	};
+}
+function returnExtra (classing) {
+	return {
+		found: true,
+		class: classing,
+	}
 }
 function forPronouns(list, tex, callit){
 	for(var item in list){
@@ -249,44 +292,83 @@ function forPronouns(list, tex, callit){
 }
 function isPreposition (text) {
 	var tex = text.toLowerCase();
+	var classing = [];
 	for(var item in prepositions){
 		if (prepositions[item].name == tex
 		|| (prepositions[item].hasp && tex === getPlural(prepositions[item].name))){
-			var classing = 'preposição';
+			classing[classing.length] = 'Preposição';
 			// classing += prepositions[item].hasp ? ' plural' : '';
-			return classing;
+			return {
+				found: true,
+				class: classing,
+			}
+		} else {
+			var suggestion = suggest(prepositions[item].name, tex);
+			if(suggestion.found){
+				classing[classing.length] = `Suggestion: ${suggestion.word}`;
+			}
 		}
 	}
-	return false;
+	return {
+		found: false,
+		class: classing,
+	};
 }
 
 function isNoun (text, number) {
+	var classing = [];
 	for(var item in nouns){
 		var allform = isAllForms(nouns, item, text);
 		if (allform){
-			var classing = 'substantivo';
+			classing[classing.length] = 'Substantivo';
 			// classing += nouns[item].masc ? ' masculino' : ' feminino';
 			classing = `${classing} ${allform}`;
-			return classing;
+			return {
+				found: true,
+				class: classing,
+			}
+		} else {
+			var suggestion = suggest(nouns[item].name, text);
+			if(suggestion.found){
+				classing[classing.length] = `Suggestion: ${suggestion.word}`;
+			}
 		}
 	}
 	if (/^[A-Z]/.test(text) && number > 1){
-		return 'substantivo próprio';
+		return {
+			found: true,
+			class: ['Substantivo Próprio'],
+		}
 	}
-	return false;
+	return {
+		found: false,
+		class: classing,
+	};
 }
 function isAdjective (text) {
 	var tex = text.toLowerCase();
+	var classing = [];
 	for(var item in adjectives){
 		var allform = isAllForms(adjectives, item, tex);
 		if (allform || tex == `${getAdjectiveForm(adjectives[item].name)}mente`){
-			var classing = 'Adjetivo';
-			classing += allform ? ` ${allform}` : '';
-			return classing;
+			var when = classing.length;
+			classing[when] = 'Adjetivo';
+			classing[when] += allform ? ` ${allform}` : '';
+			return {
+				found: true,
+				class: classing,
+			}
+		} else {
+			var suggestion = suggest(adjectives[item].name, tex);
+			if(suggestion.found){
+				classing[classing.length] = `Suggestion: ${suggestion.word}`;
+			}
 		}
-
 	}
-	return false;
+	return {
+		found: false,
+		class: classing,
+	};
 }
 function getAdjectiveForm (text) {
 	var final = text.slice(-1);
@@ -302,24 +384,38 @@ function getAdjectiveForm (text) {
 
 function isVerb (text) {
 	var tex = text.toLowerCase();
+	var classing = [];
 	for(var verb in allverbs){
 		for(var conjugate in allverbs[verb]){
 			for(var item in allverbs[verb][conjugate]){
-				var classing = `Verbo '${allverbs[verb][allverbs[verb].length-1][0]}' no ${verbTypes[conjugate]}`;
+				var when = classing.length;
+				var possible = `Verbo '${allverbs[verb][allverbs[verb].length-1][0]}' no ${verbTypes[conjugate]}`;
 				var current = allverbs[verb][conjugate][item];
+				var person = (item % 3)+1;
+				var number = item >= 3 ? 'plural' : 'singular';
 				if (current == tex
 					||(conjugate == (allverbs[verb].length - 2) && getCleanFormsHard(current, tex) )){
-					var person = (item % 3)+1;
 					if( conjugate < allverbs[verb].length-3){
-						var number = item >= 3 ? 'plural' : 'singular';
-						classing += ` na ${person}ª pessoa do ${number}`;
+						classing[when] = `${possible} na ${person}ª pessoa do ${number}`;
 					}
 					// classing += prepositions[item].hasp ? ' plural' : '';
-					return classing;
+					return {
+						found: true,
+						class: classing,
+					}
+				} else {
+					var suggestion = suggest(current, tex);
+					if(suggestion.found){
+						classing[classing.length] = `Sugestão do ${possible} na ${person}ª pessoa do ${number}: ${suggestion.word}`;
+					}
 				}
 			}
 		}
 	}
+	return {
+		found: false,
+		class: classing,
+	};
 }
 
 function isAllForms (list, item, word) {
@@ -679,6 +775,58 @@ var pronouns = {
 	alguem: { name: 'alguém',},
 	gente: { name: 'gente',},
 }
+var subPronouns = {
+	eu: { name: 'eu', singular: true, person: 1},
+	tu: { name: 'tu', singular: true, person: 2},
+	ele: { name: 'ele', biform: true, masc: true, singular: true, person: 3},
+	ela: { name: 'ela', biform: true, masc: false, singular: true, person: 3},
+	voce: { name: 'você', singular: true, person: 3},
+	nos: { name: 'nós', person: 1},
+	vos: { name: 'vós', person: 2},
+	eles: { name: 'eles', biform: true, masc: true, person: 3},
+	elas: { name: 'elas', biform: true, masc: false, person: 3},
+	voces: { name: 'vocês', person: 3},
+};
+var verbPronouns = {
+	me: { name: 'me', singular: true, person: 1},
+	te: { name: 'te', singular: true, person: 2},
+	o: { name: 'o', biform: true, masc: true, singular: true, person: 3},
+	a: { name: 'a', biform: true, masc: false, singular: true, person: 3},
+	lhe: { name: 'lhe', singular: true, person: 3},
+	se: { name: 'se', singular: true, person: 3},
+	nos: { name: 'nos', person: 1},
+	vos: { name: 'vos', person: 2},
+	os: { name: 'os', biform: true, masc: true, person: 3},
+	as: { name: 'as', biform: true, masc: false, person: 3},
+	lhes: { name: 'lhes', person: 3},
+	se: { name: 'se', person: 3},
+};
+var prepPronouns = {
+	mim: { name: 'mim', singular: true, person: 1},
+	ti: { name: 'ti', singular: true, person: 2},
+	ele: { name: 'ele', biform: true, masc: true, singular: true, person: 3},
+	ela: { name: 'ela', biform: true, masc: false, singular: true, person: 3},
+	si: { name: 'si', singular: true, person: 3},
+	nos: { name: 'nós', person: 1},
+	vos: { name: 'vós', person: 2},
+	eles: { name: 'eles', biform: true, masc: true, person: 3},
+	elas: { name: 'elas', biform: true, masc: false, person: 3},
+	si: { name: 'si', person: 3},
+};
+var possPronouns = {
+	meu: { name: 'meu', singular: true, masc: true, person: 1, hasp: true},
+	minha: { name: 'minha',  singular: true, masc: false, person: 1, hasp: true},
+	teu: { name: 'teu', singular: true, masc: true, person: 2, hasp: true},
+	tua: { name: 'tua',  singular: true, masc: false, person: 2, hasp: true},
+	seu: { name: 'seu', singular: true, masc: true, person: 3, hasp: true},
+	sua: { name: 'sua',  singular: true, masc: false, person: 3, hasp: true},
+	nosso: { name: 'nosso', masc: true, person: 1, hasp: true},
+	nossa: { name: 'nossa', masc: false, person: 1, hasp: true},
+	vosso: { name: 'vosso', masc: true, person: 1, hasp: true},
+	vossa: { name: 'vossa', masc: false, person: 1, hasp: true},
+	seu1: { name: 'seu', masc: true, person: 3, hasp: true},
+	sua2: { name: 'sua', masc: false, person: 3, hasp: true},
+};
 
 var conjuctions = {
 	e: { name: 'e',},
@@ -751,6 +899,7 @@ var adverbs = {
 	ate: { name: 'até',},
 	alem: { name: 'além',},
 	alias: { name: 'aliás',},
+	apenas: { name: 'apenas',},
 	enfim: { name: 'enfim',},
 	entao: { name: 'então',},
 	nao: { name: 'não',},
@@ -929,6 +1078,7 @@ var verbs = {
 	poer: {name: 'poer', regular: true},
 	voar: {name: 'voar', regular: true},
 	doar: {name: 'doar', regular: true},
+	fascinar: {name: 'fascinar', regular: true},
 	jogar: {name: 'jogar', regular: true, light: true},
 	equivaler: {name: 'equivaler', regular: true, light: true},
 	enrolar: {name: 'enrolar', regular: true},
@@ -1035,7 +1185,7 @@ function conjugate (verb) {
 					break;
 			}
 			switch(radical){
-				case 'seg': case 'prefer':
+				case 'segu': case 'prefer':
 					altRadical = altRadical.replaceAt(altRadical.lastIndexOf('e'), 'i');
 			}
 		} else {
