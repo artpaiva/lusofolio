@@ -47,6 +47,8 @@
 	color: #777;
     transition-delay: 0.3s;
 	transition: 0.3s;
+    display: block;
+    white-space: pre-wrap;
 }
 .analysis-panel span:hover{
     border: 1px dashed #999;
@@ -66,6 +68,9 @@
 	background-repeat:repeat-x;
 	background-size: 8px 2px;
 	background-position:0 95%;
+}
+.analysis-panel span.wrong:before{
+    color: #dd2255;
 }
 .analysis-panel span.borrow{
 	font-style: italic;
@@ -88,4 +93,14 @@
 }
 .analysis-panel text.phrase:hover{
     background: #00000011;
+}
+.analysis-panel span.better{
+    background-image:
+    linear-gradient(45deg, transparent 65%, blue 80%, transparent 90%),
+    linear-gradient(135deg, transparent 5%, blue 15%, transparent 25%),
+    linear-gradient(135deg, transparent 45%, blue 55%, transparent 65%),
+    linear-gradient(45deg, transparent 25%, blue 35%, transparent 50%);
+    background-repeat:repeat-x;
+    background-size: 8px 2px;
+    background-position:0 95%;
 }
