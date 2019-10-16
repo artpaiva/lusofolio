@@ -1,23 +1,23 @@
 *{
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    outline: none;
-    font-family: 'Lustria', serif;
-    scroll-behavior: smooth;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: none;
+	font-family: 'Lustria', serif;
+	scroll-behavior: smooth;
 }
 
 .analysis-card{
-    padding: 1rem;
+	padding: 1rem;
 }
 .analysis-card .analysis-panel{
-    display: inline-block;
-    width: 45%;
-    padding: 2rem;
-    color: #777;
-    font-size: 1.2rem;
-    vertical-align: top;
+	display: inline-block;
+	width: 45%;
+	padding: 2rem;
+	color: #777;
+	font-size: 1.2rem;
+	vertical-align: top;
 }
 .analysis-write{
 	width: 100%;
@@ -45,18 +45,18 @@
 	box-shadow: 1px 2px 3px 1px #00000022;
 	background: #fff;
 	color: #777;
-    transition-delay: 0.3s;
+	transition-delay: 0.3s;
 	transition: 0.3s;
-    display: block;
-    white-space: pre-wrap;
+	display: block;
+	white-space: pre-wrap;
 }
 .analysis-panel span:hover{
-    border: 1px dashed #999;
-    transition-delay: 0.2s;
+	border: 1px dashed #999;
+	transition-delay: 0.2s;
 }
 .analysis-panel span:hover:before{
 	opacity: 1;
-    transition-delay: 0.3s;
+	transition-delay: 0.3s;
 }
 .analysis-panel span.wrong{
 	/*text-decoration: underline wavy #dd2255;*/
@@ -70,7 +70,7 @@
 	background-position:0 95%;
 }
 .analysis-panel span.wrong:before{
-    color: #dd2255;
+	color: #dd2255;
 }
 .analysis-panel span.borrow{
 	font-style: italic;
@@ -85,22 +85,22 @@
 	color: #333;
 }
 .analysis-panel span.verb{
-    color: #999;
+	color: #999;
 }
-.analysis-panel text.phrase{
-    background: #00000000;
+.analysis-panel text.verse{
+	background: #00000000;
 	transition: 0.2s;
 }
-.analysis-panel text.phrase:hover{
-    background: #00000011;
+.analysis-panel text.verse:hover{
+	background: #00000011;
 }
 .analysis-panel span.better{
-    background-image:
-    linear-gradient(45deg, transparent 65%, blue 80%, transparent 90%),
-    linear-gradient(135deg, transparent 5%, blue 15%, transparent 25%),
-    linear-gradient(135deg, transparent 45%, blue 55%, transparent 65%),
-    linear-gradient(45deg, transparent 25%, blue 35%, transparent 50%);
-    background-repeat:repeat-x;
-    background-size: 8px 2px;
-    background-position:0 95%;
+	background-image:
+	linear-gradient(45deg, transparent 65%, blue 80%, transparent 90%),
+	linear-gradient(135deg, transparent 5%, blue 15%, transparent 25%),
+	linear-gradient(135deg, transparent 45%, blue 55%, transparent 65%),
+	linear-gradient(45deg, transparent 25%, blue 35%, transparent 50%);
+	background-repeat:repeat-x;
+	background-size: 8px 2px;
+	background-position:0 95%;
 }

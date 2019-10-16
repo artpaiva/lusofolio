@@ -1,7 +1,9 @@
 
 var analysis = document.getElementById('analysis-field');
 var writing = document.getElementById('write');
+var previousWrite = '';
 var typeTimer;
+var canSuggest = true;
 
 writing.addEventListener('keyup', () => {
     clearTimeout(typeTimer);
@@ -12,24 +14,31 @@ writing.addEventListener('keyup', () => {
 
 function runAnalysis () {
 	// analysis.innerHTML = writing.value;
-	analysis.innerHTML = '';
 	var text_write = writing.value;
-	// var word_now = text_write.split(/(\n)| /g);
-	// var analysis_now = text_write.split(/(?=[.\s]|\b)/);
-	// var phrases = text_write.split(/(?=[.\!-?\n/])/g);
-	var phrases = text_write.split(/(?<=[\.!?\n])/);
-	for(var item in phrases){
-    var phrase = document.createElement('text');
-		phrase.classList.add('phrase');
-		var children = phraseMorphology(phrases[item]);
-		for(var word in children){
-			phrase.appendChild(children[word]);
+	if(previousWrite !== text_write){
+		analysis.innerHTML = '';
+		// var word_now = text_write.split(/(\n)| /g);
+		// var analysis_now = text_write.split(/(?=[.\s]|\b)/);
+		// var phrases = text_write.split(/(?=[.\!-?\n/])/g);
+		var verses = analysisLexic(text_write);
+		for(var item in verses){
+			var verse = document.createElement('text');
+			verse.classList.add('verse');
+			var children = analysisMorphology(verses[item]);
+			for(var word in children){
+				verse.appendChild(children[word]);
+			}
+			analysis.appendChild(verse);
 		}
-		analysis.appendChild(phrase);
 	}
+	previousWrite = text_write;
 }
 
-function phraseMorphology (text) {
+function analysisLexic (text) {
+	var verses = text.split(/(?<=[\.!?\n])/);
+	return verses;
+}
+function analysisMorphology (text) {
 	var analysis_now = text.split(/([, .?!\n;—/\(\)")])/g);
 	// var analysis_now = text.split(/(?<=[, .?!\n;—/\(\)'")])/);
 	var ran = '';
@@ -143,18 +152,28 @@ function isNumber (text) {
 }
 
 function suggest (word, tex) {
-	var letters = ['a', 'ã', 'ão', 'á', 'b', 'c', 'ç', 'd', 'e', 'é', 'f', 'g', 'h', 'i', 'í', 'j', 'k', 'l', 'lh', 'm', 'n', 'nh', 'o', 'ó', 'õ', 'p', 'q', 'qu', 'r', 'rr', 's', 'ss', 't', 'u', 'ú', 'ü', 'v', 'w', 'x', 'y', 'z'];
-	// console.log(`Trying suggestion ${tex} to ${word}.`);
-	if(tex.length > 1){
-		for(var x = 0; x < tex.length; x++){
-			for(var y in letters){
-				if(tex.close(x, 1, letters[y]) === word){
-					console.log(`Suggestion: change ${tex} to ${word}.`);
-					return {
-						found: true,
-						word: word,
-					};
+	if(canSuggest){
+		// var letters = ['a', 'ã', 'á', 'b', 'c', 'ç', 'd', 'e', 'é', 'f', 'g', 'h', 'i', 'í', 'j', 'k', 'l', 'm', 'n', 'o', 'ó', 'õ', 'p', 'q', 'r', 's', 't', 'u', 'ú', 'ü', 'v', 'w', 'x', 'y', 'z'];
+		var letters = ['a', 'á', 'ã', 'ç', 'e', 'é', 'ê', 'i', 'í', 'o', 'ó', 'õ', 'u', 'ü', 'ú'];
+		// console.log(`Trying suggestion ${tex} to ${word}.`);
+		if(tex.length > 1){
+			for(var x = 0; x < tex.length; x++){
+				for(var y in letters){
+					if(tex.close(x, 1, letters[y]) === word){
+						console.log(`Suggestion: change ${tex} to ${word}.`);
+						return {
+							found: true,
+							word: word,
+						};
+					}
 				}
+			}
+			var nothings = tex.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
+			if(word === nothings){
+				return {
+					found: true,
+					word: word,
+				};
 			}
 		}
 	}
@@ -408,10 +427,10 @@ function isVerb (text) {
 						class: classing,
 					}
 				} else {
-					var suggestion = suggest(current, tex);
-					if(suggestion.found){
-						classing[classing.length] = `Sugestão do ${possible} na ${person}ª pessoa do ${number}: ${suggestion.word}`;
-					}
+					// var suggestion = suggest(current, tex);
+					// if(suggestion.found){
+					// 	classing[classing.length] = `Sugestão do ${possible} na ${person}ª pessoa do ${number}: ${suggestion.word}`;
+					// }
 				}
 			}
 		}
@@ -1064,6 +1083,7 @@ var verbs = {
 	lavar: {name: 'lavar', regular: true},
 	calar: {name: 'calar', regular: true},
 	tentar: {name: 'tentar', regular: true},
+	aguentar: {name: 'agüentar', regular: true},
 	criar: {name: 'criar', regular: true},
 	verificar: {name: 'verificar', regular: true},
 	procurar: {name: 'procurar', regular: true},
