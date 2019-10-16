@@ -31,6 +31,7 @@ function runAnalysis () {
 
 function phraseMorphology (text) {
 	var analysis_now = text.split(/([, .?!\n;—/\(\)")])/g);
+	// var analysis_now = text.split(/(?<=[, .?!\n;—/\(\)'")])/);
 	var ran = '';
 	var element = [];
 	var count = 0;
@@ -59,7 +60,7 @@ function phraseMorphology (text) {
 			// var segmenting = [numbering, conjuctioning];
 			for(var y in segmenting){
 				atual.classList = segmenting[y].found ? segments[y] : atual.classList;
-				console.log(segmenting[y].class);
+				// console.log(segmenting[y].class);
 				for(var z in segmenting[y].class){
 					if( segmenting[y].class[z] != undefined ){
 						if(content.length > 0)
@@ -144,14 +145,16 @@ function isNumber (text) {
 function suggest (word, tex) {
 	var letters = ['a', 'ã', 'ão', 'á', 'b', 'c', 'ç', 'd', 'e', 'é', 'f', 'g', 'h', 'i', 'í', 'j', 'k', 'l', 'lh', 'm', 'n', 'nh', 'o', 'ó', 'õ', 'p', 'q', 'qu', 'r', 'rr', 's', 'ss', 't', 'u', 'ú', 'ü', 'v', 'w', 'x', 'y', 'z'];
 	// console.log(`Trying suggestion ${tex} to ${word}.`);
-	for(var x = 0; x < tex.length; x++){
-		for(var y in letters){
-			if(tex.close(x, 1, letters[y]) === word){
-				console.log(`Suggestion: change ${tex} to ${word}.`);
-				return {
-					found: true,
-					word: word,
-				};
+	if(tex.length > 1){
+		for(var x = 0; x < tex.length; x++){
+			for(var y in letters){
+				if(tex.close(x, 1, letters[y]) === word){
+					console.log(`Suggestion: change ${tex} to ${word}.`);
+					return {
+						found: true,
+						word: word,
+					};
+				}
 			}
 		}
 	}
@@ -238,15 +241,15 @@ function isArticle (text) {
 
 function isPronoun (text) {
 	var tex = text.toLowerCase();
-	var classing = false;
-	classing = forPronouns(subPronouns, tex, 'Pronome de Sujeito');
-	if (classing) return returnExtra(classing);
-	classing = forPronouns(verbPronouns, tex, 'Objeto do Verbo');
-	if (classing) return returnExtra(classing);
-	classing = forPronouns(prepPronouns, tex, 'Objeto da Preposição');
-	if (classing) return returnExtra(classing);
-	classing = forPronouns(possPronouns, tex, 'Objeto Possessivo');
-	if (classing) return returnExtra(classing);
+	var classing = [];
+	classing[0] = forPronouns(subPronouns, tex, 'Pronome de Sujeito');
+	if (classing[0]) return returnExtra(classing);
+	classing[0] = forPronouns(verbPronouns, tex, 'Objeto do Verbo');
+	if (classing[0]) return returnExtra(classing);
+	classing[0] = forPronouns(prepPronouns, tex, 'Objeto da Preposição');
+	if (classing[0]) return returnExtra(classing);
+	classing[0] = forPronouns(possPronouns, tex, 'Objeto Possessivo');
+	if (classing[0]) return returnExtra(classing);
 	classing = [];
 	for(var item in pronouns){
 		if (pronouns[item].name == tex
@@ -320,9 +323,10 @@ function isNoun (text, number) {
 	for(var item in nouns){
 		var allform = isAllForms(nouns, item, text);
 		if (allform){
-			classing[classing.length] = 'Substantivo';
+			var when = classing.length;
+			classing[when] = 'Substantivo';
 			// classing += nouns[item].masc ? ' masculino' : ' feminino';
-			classing = `${classing} ${allform}`;
+			classing[when] = `${classing[when]} ${allform}`;
 			return {
 				found: true,
 				class: classing,
@@ -848,6 +852,7 @@ var prepositions = {
 	em: { name: 'em',},
 	no: { name: 'no', hasp: true,},
 	na: { name: 'na', hasp: true,},
+	d: { name: 'd\'',},
 	de: { name: 'de',},
 	do: { name: 'do', hasp: true,},
 	da: { name: 'da', hasp: true,},
