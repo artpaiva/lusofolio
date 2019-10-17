@@ -72,6 +72,10 @@
 .analysis-panel span.wrong:before{
 	color: #dd2255;
 }
+.analysis-panel span.fix{
+	cursor: pointer;
+	border: 1px dashed blue;
+}
 .analysis-panel span.borrow{
 	font-style: italic;
 }

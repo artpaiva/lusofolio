@@ -76,6 +76,15 @@ function analysisMorphology (text) {
 							content[content.length] = `\n- ${segmenting[y].class[z]}`;
 						else
 							content[content.length] = `- ${segmenting[y].class[z]}`;
+						if(segmenting[y].fix){
+							// atual.onclick = correctThis(atual, segmenting[y].fix);
+							atual.setAttribute("fix", segmenting[y].fix);
+							atual.onclick = function(){
+								this.innerHTML = this.getAttribute("fix");
+								this.classList.remove('fix');
+							};
+							atual.classList.add('fix');
+						}
 					}
 				}
 			}
@@ -185,6 +194,10 @@ function suggest (word, tex) {
 String.prototype.close = function(idx, rem, str) {
     return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
 };
+
+function correctThis (element, text) {
+	element.innerHTML = text;
+}
 
 function isConjunction (text) {
 	var tex = text.toLowerCase();
@@ -421,10 +434,15 @@ function isVerb (text) {
 					if( conjugate < allverbs[verb].length-3){
 						classing[when] = `${possible} na ${person}ª pessoa do ${number}`;
 					}
+					var colocacao = false;
+					if( 4 == conjugate|| 5 == conjugate ){
+						colocacao = text.close(-2, 0, '-me-');
+					}
 					// classing += prepositions[item].hasp ? ' plural' : '';
 					return {
 						found: true,
 						class: classing,
+						fix: colocacao,
 					}
 				} else {
 					// var suggestion = suggest(current, tex);
