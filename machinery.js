@@ -436,7 +436,7 @@ function isVerb (text) {
 					}
 					var colocacao = false;
 					if( 4 == conjugate|| 5 == conjugate ){
-						colocacao = text.close(-2, 0, '-me-');
+						colocacao = text.close(text.lastIndexOf('r')+1, 0, '-me-');
 					}
 					// classing += prepositions[item].hasp ? ' plural' : '';
 					return {
@@ -803,6 +803,8 @@ var pronouns = {
 	nisto: { name: 'nisto', masc: true, hasp: true, indefinite: true,},
 	neste: { name: 'neste', biform: true, masc: true, hasp: true, indefinite: true,},
 	deste: { name: 'deste', biform: true, masc: true, hasp: true, indefinite: true,},
+	diverso: { name: 'diverso', biform: true, masc: true, hasp: true, indefinite: true,},
+	vario: { name: 'vário', biform: true, masc: true, hasp: true, indefinite: true,},
 	comigo: { name: 'comigo',},
 	contigo: { name: 'contigo',},
 	consigo: { name: 'consigo',},
@@ -975,6 +977,8 @@ var adjectives = {
 	bonito: {name: 'bonito',masc: true,biform: true,hasp: true,},
 	lindo: {name: 'lindo',masc: true,biform: true,hasp: true,},
 	parecido: {name: 'parecido',masc: true,biform: true,hasp: true,},
+	morfologico: {name: 'morfológico',masc: true,biform: true,hasp: true,},
+	necessario: {name: 'necessário',masc: true,biform: true,hasp: true,},
 	mau: {name: 'mau',masc: true,hasp: true,},
 	bom: {name: 'bom',masc: true,hasp: true,},
 	ma: {name: 'má',hasp: true,},
@@ -989,6 +993,8 @@ var adjectives = {
 	proposital: {name: 'proposital',hasp: true,},
 	facil: {name: 'fácil',hasp: true,},
 	dificil: {name: 'difícil',hasp: true,},
+	possivel: {name: 'possível',hasp: true,},
+	inicial: {name: 'inicial',hasp: true,},
 	claro: {name: 'claro',masc: true,biform: true,hasp: true,},
 	escuro: {name: 'escuro',masc: true,biform: true,hasp: true,},
 	branco: {name: 'branco',masc: true,biform: true,hasp: true,},
@@ -1057,6 +1063,7 @@ var adjectives = {
 	porco: {name: 'porco',masc: true,biform: true,hasp: true,},
 	sujo: {name: 'sujo',masc: true,biform: true,hasp: true,},
 	submisso: {name: 'submisso',masc: true,biform: true,hasp: true,},
+	conclusivo: {name: 'conclusivo',masc: true,biform: true,hasp: true,},
 	mesquinho: {name: 'mesquinho',masc: true,biform: true,hasp: true,},
 	ridiculo: {name: 'ridículo',masc: true,biform: true,hasp: true,},
 	grotesco: {name: 'grotesco',masc: true,biform: true,hasp: true,},
@@ -1067,6 +1074,7 @@ var adjectives = {
 	comico1: {name: 'cómico',masc: true,biform: true,hasp: true,},
 	erroneo: {name: 'errôneo',masc: true,biform: true,hasp: true,},
 	erroneo1: {name: 'erróneo',masc: true,biform: true,hasp: true,},
+	suficiente: {name: 'suficiente',hasp: true,},
 	arrogante: {name: 'arrogante',hasp: true,},
 	infame: {name: 'infame',hasp: true,},
 	infame1: {name: 'ínfame',hasp: true,},
@@ -1113,6 +1121,12 @@ var verbs = {
 	sofrer: {name: 'sofrer', regular: true},
 	olhar: {name: 'olhar', regular: true},
 	titubear: {name: 'titubear', regular: true},
+	classificar: {name: 'classificar', regular: true},
+	ordenar: {name: 'ordenar', regular: true},
+	determinar: {name: 'determinar', regular: true},
+	tratar: {name: 'tratar', regular: true},
+	encaixar: {name: 'encaixar', regular: true},
+	flexionar: {name: 'flexionar', regular: true},
 	aquecer: {name: 'aquecer', regular: true, light: true},
 	acontecer: {name: 'acontecer', regular: true, light: true},
 	nascer: {name: 'nascer', regular: true, light: true},
