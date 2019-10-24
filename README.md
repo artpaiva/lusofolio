@@ -13,4 +13,4 @@ ___
 #### Projeções Futuras
 - Análise Semântica
 - Sugestões
-- Click-and-Fix
+- Click-and-Fix (Versão basilar já implementada)
