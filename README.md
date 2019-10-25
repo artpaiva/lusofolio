@@ -14,3 +14,4 @@ ___
 - Análise Semântica
 - Sugestões
 - Click-and-Fix (Versão basilar já implementada)
+- Hover info (Pronunciação IPA, definição)
