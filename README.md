@@ -14,4 +14,4 @@ ___
 - Análise Semântica
 - Sugestões
 - Click-and-Fix (Versão basilar já implementada)
-- Hover info (Pronúncia IPA, definição)
+- Hover info (Pronúncia IPA, definição, etimologia)
