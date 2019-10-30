@@ -12,6 +12,6 @@ Está confirmado a inserção de um analista sintático trivial, que pode coteja
 ___
 #### Projeções Futuras
 - Análise Semântica
-- Sugestões
+- Sugestões (Não inclui conjugações verbais devido à queda de performance)
 - Click-and-Fix (Versão basilar já implementada)
 - Hover info (Pronúncia IPA, definição, etimologia)
