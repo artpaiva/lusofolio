@@ -8,6 +8,26 @@
 	scroll-behavior: smooth;
 }
 
+.upper-bar{
+	position: sticky;
+	top: 0;
+	border-bottom: 1px solid #aaa;
+	background: #fff;
+	color: #333;
+}
+.upper-list li{
+	display: inline-block;
+	padding: 0.8rem 2rem;
+	font-size: 1.4rem;
+}
+.upper-self{
+	font-family: 'Spectral', serif;
+	font-weight: 600;
+}
+.upper-item{
+	font-family: 'Spectral', serif;
+	font-weight: 300;
+}
 .analysis-card{
 	padding: 1rem;
 }
