@@ -7,7 +7,7 @@ A etapa de análise morfológica realiza primordiamente uma separação do texto
 No momento, está sendo estudado a possibilidade de acusar quais palavras mais perto coincidem com a inserida, caso esta não condizer com nenhuma das _palavras patentes_.
 ___
 ### Análise Sintática Rudimentar
-O uso preliminar da _Análise Sintática Rudimentar_, é como complemento da Análise Morfológica, para que esta possa diferir as palavras polissêmias, que não podem ser determinadas de forma ilativa apenas por correspondência ortográfica. Porém, é visado que esta etapa seja expandida para realizar a própriamente dita, Análise Sintática.
+O uso preliminar da _Análise Sintática Rudimentar_, é para servir como complemento da Análise Morfológica, para que esta possa diferir as palavras polissêmias, que não podem ser determinadas de forma ilativa apenas por correspondência ortográfica. Porém, é visado que esta etapa seja expandida para realizar a própriamente dita, Análise Sintática.
 Está confirmado a inserção de um analista sintático trivial, que pode cotejar sentenças báscias como: 'O rapaz olhou pela janela'.
 ___
 #### Projeções Futuras
