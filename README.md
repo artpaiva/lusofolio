@@ -8,7 +8,7 @@ No momento, está sendo estudado a possibilidade de acusar quais palavras mais p
 ___
 ### Análise Sintática Rudimentar
 O uso preliminar da _Análise Sintática Rudimentar_, serve apenas para complementar a Análise Morfológica, para que esta possa diferir as palavras polissêmias, que não podem ser determinadas de forma ilativa apenas por correspondência ortográfica. Porém, é visado que esta etapa seja expandida para realizar a própriamente dita, Análise Sintática.
-Está confirmado a inserção de um analista sintático trivial, que pode cotejar sentenças báscias como: 'O rapaz olhou pela janela'.
+Está confirmado a inserção de um analista sintático trivial, que pode aferur sentenças báscias como: 'O rapaz olhou pela janela'.
 ___
 #### Projeções Futuras
 - Análise Semântica
